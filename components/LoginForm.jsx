@@ -33,7 +33,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="grid place-items-center min-h-screen bg-gray-100 px-4">
+    <div className="grid place-items-start min-h-screen bg-gray-100 px-4 mt-8">
       <div className="shadow-lg p-6 rounded-lg border-t-4 border-green-400 bg-white max-w-md w-full">
         <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -62,7 +62,7 @@ export default function LoginForm() {
           )}
 
           <Link
-            className="text-sm mt-2 text-right text-green-600 hover:underline"
+            className="text-sm mt-2 text-right text-green-800 hover:underline"
             href={"/register"}
           >
             Don&apos;t have an account?{" "}
