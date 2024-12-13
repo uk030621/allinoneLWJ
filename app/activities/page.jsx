@@ -157,24 +157,14 @@ export default function ActivitiesDashboard() {
     }
   };
 
-  {
-    // Handle search functionality
-    /*useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredActivities(activities); // Reset to all activities if query is empty
-    } else {
-      setFilteredActivities(
-        activities.filter(
-          (activity) =>
-            activity.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            activity.description
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
-        )
-      );
-    }
-  }, [searchQuery, activities]);*/
-  }
+  // Clear form inputs
+  const clearInputs = async () => {
+    setSearchQuery("");
+    setNewActivity({
+      title: "",
+      description: "",
+    });
+  };
 
   return (
     <div className="bg-blue-200 h-screen">
@@ -188,9 +178,9 @@ export default function ActivitiesDashboard() {
 
           <button
             onClick={handleLogout}
-            className="bg-slate-600 text-white font-bold px-4 py-1 mt-3 ml-2 rounded hover:bg-slate-900"
+            className="bg-slate-600 text-white text-base px-3 py-1 mt-3 ml-2 rounded hover:bg-slate-900"
           >
-            Log Out
+            Exit
           </button>
         </div>
 
@@ -216,8 +206,8 @@ export default function ActivitiesDashboard() {
 
         {/* Activities Section */}
         <div className="mt-6">
-          <h2 className="text-xl font-bold mb-4">
-            Add a task for {session?.user?.name}
+          <h2 className="text-xl font-bold mb-2">
+            Add action {/*for {session?.user?.name}*/}
           </h2>
           <input
             type="text"
@@ -236,19 +226,25 @@ export default function ActivitiesDashboard() {
             }
             className="border p-2 w-full mb-2 break-words"
           />
-          <div className="flex">
+          <div className="flex justify-between items-center">
             <button
               onClick={addActivity}
               disabled={
                 !newActivity.title.trim() || !newActivity.description.trim()
               } // Disable if fields are empty
-              className={`px-3 py-1 text-sm rounded ${
+              className={`px-3 py-1 text-base rounded-md ${
                 !newActivity.title.trim() || !newActivity.description.trim()
                   ? "bg-gray-300 cursor-not-allowed text-gray-500"
                   : "bg-green-500 text-white hover:bg-green-600"
               }`}
             >
-              Add Activity
+              Add action
+            </button>
+            <button
+              onClick={clearInputs}
+              className="bg-slate-600 text-white w-fit px-3 py-1 rounded-md ml-3 text-base hover:bg-slate-900"
+            >
+              Refresh
             </button>
           </div>
           <div className="grid grid-cols-1 gap-4 mt-6">
@@ -311,12 +307,15 @@ export default function ActivitiesDashboard() {
                       {activity.title}
                     </h2>
                     <p className="break-words">{activity.description}</p>
-                    <p className="text-xs mt-4">
+                    <p className="italic text-xs mt-4">
                       Created: {new Date(activity.createdAt).toLocaleString()}
                     </p>
-                    <p className="italic mt-1 text-xs text-slate-600">
-                      Updated: {new Date(activity.updatedAt).toLocaleString()}
-                    </p>
+                    {/* Conditionally show the "Updated" label */}
+                    {activity.createdAt !== activity.updatedAt && (
+                      <p className="italic mt-1 text-xs text-slate-600">
+                        Updated: {new Date(activity.updatedAt).toLocaleString()}
+                      </p>
+                    )}
                     <div className="flex justify-end mt-2">
                       <button
                         onClick={() => setEditActivity(activity._id)}
