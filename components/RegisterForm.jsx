@@ -59,32 +59,32 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="grid place-items-start min-h-screen bg-gray-100 px-4 mt-8">
-      <div className="shadow-lg p-6 rounded-lg border-t-4 border-green-400 bg-white max-w-md w-full">
+    <div className="grid place-items-start min-h-screen bg-blue-200 px-4 py-8">
+      <div className="shadow-lg p-6 rounded-lg border-t-4 border-blue-400 bg-slate-400 max-w-md w-full">
         <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
-            className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
             onChange={(e) => setName(e.target.value)}
             type="text"
             placeholder="Full Name"
             //required
           />
           <input
-            className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
             onChange={(e) => setEmail((e.target.value || "").toLowerCase())}
             type="email"
             placeholder="Email"
             //required
           />
           <input
-            className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
             onChange={(e) => setPassword(e.target.value)}
             type="password"
             placeholder="Password"
             //required
           />
-          <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 font-bold rounded-md cursor-pointer transition-all duration-200">
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 font-bold rounded-md cursor-pointer transition-all duration-200">
             Register
           </button>
 
@@ -95,7 +95,7 @@ export default function RegisterForm() {
           )}
 
           <Link
-            className="text-sm mt-2 text-right text-green-800 hover:underline"
+            className="text-sm mt-2 text-right text-black hover:underline"
             href={"/"}
           >
             Already have an account? <span className="font-medium">Login</span>

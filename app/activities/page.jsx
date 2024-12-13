@@ -76,7 +76,7 @@ export default function ActivitiesDashboard() {
   // Early returns after hooks have been initialized
   if (isExiting) {
     return (
-      <div className="container mx-auto flex justify-center items-center h-screen">
+      <div className="container mx-auto flex justify-center bg-blue-200 items-center h-screen">
         <h1 className="text-2xl font-bold">Signing Out...</h1>
       </div>
     );
@@ -84,7 +84,7 @@ export default function ActivitiesDashboard() {
 
   if (status === "loading") {
     return (
-      <div className="container mx-auto flex justify-center items-center h-screen">
+      <div className="container mx-auto flex justify-center bg-blue-200 items-center h-screen">
         <h1 className="text-2xl font-bold">Loading...</h1>
       </div>
     );
