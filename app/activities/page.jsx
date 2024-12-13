@@ -168,86 +168,89 @@ export default function ActivitiesDashboard() {
 
   return (
     <div className="bg-blue-200 h-screen">
-      <div className="container mx-auto pt-0 p-4 max-w-screen-lg">
-        {/* Navigation Button */}
-        <div className="flex justify-between items-center">
-          {/* Welcome Section */}
-          <h1 className="text-2xl font-bold text-left mt-4 break-words">
-            Hello {session?.user?.name?.split(" ")[0] || "Guest"}!
-          </h1>
-
-          <button
-            onClick={handleLogout}
-            className="bg-slate-600 text-white text-base px-3 py-1 mt-3 ml-2 rounded hover:bg-slate-900"
-          >
-            Exit
-          </button>
-        </div>
-
-        <div className="text-left mb-4">
-          <p>
-            Email:{" "}
-            <span className="font-bold text-gray-700">
-              {session?.user?.email}
-            </span>
-          </p>
-        </div>
-
-        {/* Search Section */}
-        <div className="mt-4">
-          <input
-            type="text"
-            placeholder="Search activities..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="border p-2 w-full mb-4 break-words"
-          />
-        </div>
-
-        {/* Activities Section */}
-        <div className="mt-6">
-          <h2 className="text-xl font-bold mb-2">
-            Add action {/*for {session?.user?.name}*/}
-          </h2>
-          <input
-            type="text"
-            placeholder="Title"
-            value={newActivity.title}
-            onChange={(e) =>
-              setNewActivity({ ...newActivity, title: e.target.value })
-            }
-            className="border p-2 w-full mb-2 break-words"
-          />
-          <textarea
-            placeholder="Description"
-            value={newActivity.description}
-            onChange={(e) =>
-              setNewActivity({ ...newActivity, description: e.target.value })
-            }
-            className="border p-2 w-full mb-2 break-words"
-          />
+      <div className="container mx-auto pt-0 p-4 max-w-screen-lg flex flex-col h-full">
+        {/* Fixed Form Section */}
+        <div className="flex-shrink-0">
+          {/* Navigation Button */}
           <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-left mt-4 break-words">
+              Hello {session?.user?.name?.split(" ")[0] || "Guest"}!
+            </h1>
             <button
-              onClick={addActivity}
-              disabled={
-                !newActivity.title.trim() || !newActivity.description.trim()
-              } // Disable if fields are empty
-              className={`px-3 py-1 text-base rounded-md ${
-                !newActivity.title.trim() || !newActivity.description.trim()
-                  ? "bg-gray-300 cursor-not-allowed text-gray-500"
-                  : "bg-green-500 text-white hover:bg-green-600"
-              }`}
+              onClick={handleLogout}
+              className="bg-slate-600 text-white text-base px-3 py-1 mt-3 ml-2 rounded hover:bg-slate-900"
             >
-              Add action
-            </button>
-            <button
-              onClick={clearInputs}
-              className="bg-slate-600 text-white w-fit px-3 py-1 rounded-md ml-3 text-base hover:bg-slate-900"
-            >
-              Refresh
+              Exit
             </button>
           </div>
-          <div className="grid grid-cols-1 gap-4 mt-6">
+
+          <div className="text-left mb-4">
+            <p>
+              Email:{" "}
+              <span className="font-bold text-gray-700">
+                {session?.user?.email}
+              </span>
+            </p>
+          </div>
+
+          {/* Search Section */}
+          <div className="mt-4">
+            <input
+              type="text"
+              placeholder="Search activities..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="border p-2 w-full mb-4 break-words"
+            />
+          </div>
+
+          {/* Add Action Form */}
+          <div>
+            <h2 className="text-xl font-bold mb-2">Add action</h2>
+            <input
+              type="text"
+              placeholder="Title"
+              value={newActivity.title}
+              onChange={(e) =>
+                setNewActivity({ ...newActivity, title: e.target.value })
+              }
+              className="border p-2 w-full mb-2 break-words"
+            />
+            <textarea
+              placeholder="Description"
+              value={newActivity.description}
+              onChange={(e) =>
+                setNewActivity({ ...newActivity, description: e.target.value })
+              }
+              className="border p-2 w-full mb-2 break-words"
+            />
+            <div className="flex justify-between items-center">
+              <button
+                onClick={addActivity}
+                disabled={
+                  !newActivity.title.trim() || !newActivity.description.trim()
+                }
+                className={`px-3 py-1 text-base rounded-md ${
+                  !newActivity.title.trim() || !newActivity.description.trim()
+                    ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                    : "bg-green-500 text-white hover:bg-green-600"
+                }`}
+              >
+                Add action
+              </button>
+              <button
+                onClick={clearInputs}
+                className="bg-slate-600 text-white w-fit px-3 py-1 rounded-md ml-3 text-base hover:bg-slate-900"
+              >
+                Refresh
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Scrollable Activities Section */}
+        <div className="flex-grow overflow-y-auto mt-4">
+          <div className="grid grid-cols-1 gap-4">
             {filteredActivities.map((activity) => (
               <div
                 key={activity._id}
@@ -310,7 +313,6 @@ export default function ActivitiesDashboard() {
                     <p className="italic text-xs mt-4">
                       Created: {new Date(activity.createdAt).toLocaleString()}
                     </p>
-                    {/* Conditionally show the "Updated" label */}
                     {activity.createdAt !== activity.updatedAt && (
                       <p className="italic mt-1 text-xs text-slate-600">
                         Updated: {new Date(activity.updatedAt).toLocaleString()}
