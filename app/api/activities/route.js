@@ -3,22 +3,24 @@ import UserActivity from "@/models/useractivity";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 
-// GET Method: Fetch user activities
+// GET Method: Fetch user activities with search
 export async function GET(req) {
-  //console.log("[GET /api/activities] Request received");
   const session = await getServerSession(authOptions);
-  //console.log("[GET /api/activities] Session:", session);
 
   if (!session) {
-    //console.error("[GET /api/activities] Unauthorized access attempt");
     return new Response("Unauthorized", { status: 401 });
   }
 
   await connectMongoDB();
-  //console.log("[GET /api/activities] Connected to MongoDB");
 
-  const activities = await UserActivity.find({ userId: session.user.id });
-  //console.log("[GET /api/activities] Activities fetched:", activities);
+  const url = new URL(req.url);
+  const searchQuery = url.searchParams.get("search") || "";
+
+  // Fetch activities filtered by the search query
+  const activities = await UserActivity.find({
+    userId: session.user.id,
+    title: { $regex: searchQuery, $options: "i" }, // Case-insensitive search in titles
+  });
 
   return new Response(JSON.stringify(activities), { status: 200 });
 }

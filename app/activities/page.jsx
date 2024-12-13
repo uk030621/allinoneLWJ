@@ -1,3 +1,4 @@
+//app/page.js
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -5,14 +6,16 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function ActivitiesDashboard() {
-  const { data: session, status } = useSession(); // Add session handling with status
+  const { data: session, status } = useSession();
   const [activities, setActivities] = useState([]);
+  const [filteredActivities, setFilteredActivities] = useState([]);
   const [newActivity, setNewActivity] = useState({
     title: "",
     description: "",
   });
-  const [editActivity, setEditActivity] = useState(null); // State for editing
-  const [isExiting, setIsExiting] = useState(false); // State for "Exiting" message
+  const [editActivity, setEditActivity] = useState(null);
+  const [isExiting, setIsExiting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
 
   // Fetch activities with useCallback
@@ -20,18 +23,17 @@ export default function ActivitiesDashboard() {
     if (status === "authenticated" && !isExiting) {
       try {
         const res = await fetch("/api/activities", { credentials: "include" });
-
         if (!res.ok) {
           if (res.status === 401) {
-            setIsExiting(true); // Show "Exiting" message if unauthorized
-            signOut(); // Automatically log out if session expired
+            setIsExiting(true);
+            signOut();
           }
           console.error("Failed to fetch activities:", res.statusText);
           return;
         }
-
         const data = await res.json();
         setActivities(data);
+        setFilteredActivities(data);
       } catch (error) {
         console.error("Error fetching activities:", error);
       }
@@ -49,11 +51,29 @@ export default function ActivitiesDashboard() {
 
   // Handle logout process
   const handleLogout = async () => {
-    setIsExiting(true); // Display "Exiting" message
-    await signOut({ redirect: false }); // Prevent automatic redirect
-    router.push("/api/auth/signin"); // Explicitly redirect to login
+    setIsExiting(true);
+    await signOut({ redirect: false });
+    router.push("/api/auth/signin");
   };
 
+  // Handle search functionality
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredActivities(activities);
+    } else {
+      setFilteredActivities(
+        activities.filter(
+          (activity) =>
+            activity.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            activity.description
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+        )
+      );
+    }
+  }, [searchQuery, activities]);
+
+  // Early returns after hooks have been initialized
   if (isExiting) {
     return (
       <div className="container mx-auto flex justify-center items-center h-screen">
@@ -137,6 +157,25 @@ export default function ActivitiesDashboard() {
     }
   };
 
+  {
+    // Handle search functionality
+    /*useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredActivities(activities); // Reset to all activities if query is empty
+    } else {
+      setFilteredActivities(
+        activities.filter(
+          (activity) =>
+            activity.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            activity.description
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+        )
+      );
+    }
+  }, [searchQuery, activities]);*/
+  }
+
   return (
     <div className="bg-blue-200 h-screen">
       <div className="container mx-auto pt-0 p-4 max-w-screen-lg">
@@ -146,11 +185,6 @@ export default function ActivitiesDashboard() {
           <h1 className="text-2xl font-bold text-left mt-4 break-words">
             Hello {session?.user?.name?.split(" ")[0] || "Guest"}!
           </h1>
-          {/*<Link href="/dashboard">
-          <button className="bg-green-500 text-white font-bold px-4 py-1 mt-3 rounded hover:bg-green-600">
-            Go to Dashboard
-          </button>
-        </Link>*/}
 
           <button
             onClick={handleLogout}
@@ -167,6 +201,17 @@ export default function ActivitiesDashboard() {
               {session?.user?.email}
             </span>
           </p>
+        </div>
+
+        {/* Search Section */}
+        <div className="mt-4">
+          <input
+            type="text"
+            placeholder="Search activities..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="border p-2 w-full mb-4 break-words"
+          />
         </div>
 
         {/* Activities Section */}
@@ -207,7 +252,7 @@ export default function ActivitiesDashboard() {
             </button>
           </div>
           <div className="grid grid-cols-1 gap-4 mt-6">
-            {activities.map((activity) => (
+            {filteredActivities.map((activity) => (
               <div
                 key={activity._id}
                 className="shadow-lg p-4 bg-slate-300 border rounded flex flex-col break-words"
