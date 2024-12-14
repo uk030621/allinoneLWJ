@@ -41,14 +41,6 @@ export async function POST(req) {
 
   try {
     const { title, description, date } = await req.json();
-    {
-      /*console.log("[POST /api/activities] Data received:", {
-      title,
-      description,
-      date,
-    });*/
-    }
-
     const activity = await UserActivity.create({
       userId: session.user.id,
       title,
@@ -81,14 +73,6 @@ export async function PUT(req) {
 
   try {
     const { id, title, description, date } = await req.json();
-    {
-      /*console.log("[PUT /api/activities] Data received:", {
-      id,
-      title,
-      description,
-      date,
-    });*/
-    }
 
     const updatedActivity = await UserActivity.findByIdAndUpdate(
       id,

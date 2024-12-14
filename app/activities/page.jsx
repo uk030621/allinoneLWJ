@@ -16,7 +16,19 @@ export default function ActivitiesDashboard() {
   const [editActivity, setEditActivity] = useState(null);
   const [isExiting, setIsExiting] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null);
   const router = useRouter();
+  const [dateTime, setDateTime] = useState(new Date());
+
+  useEffect(() => {
+    // Update the date and time every second
+    const interval = setInterval(() => {
+      setDateTime(new Date());
+    }, 1000);
+
+    // Cleanup the interval on component unmount
+    return () => clearInterval(interval);
+  }, []);
 
   // Fetch activities with useCallback
   const fetchActivities = useCallback(async () => {
@@ -28,14 +40,14 @@ export default function ActivitiesDashboard() {
             setIsExiting(true);
             signOut();
           }
-          console.error("Failed to fetch activities:", res.statusText);
-          return;
+          throw new Error(`Failed to fetch activities: ${res.statusText}`);
         }
         const data = await res.json();
         setActivities(data);
         setFilteredActivities(data);
       } catch (error) {
         console.error("Error fetching activities:", error);
+        setErrorMessage(error.message);
       }
     }
   }, [status, isExiting]);
@@ -101,14 +113,14 @@ export default function ActivitiesDashboard() {
       });
 
       if (!res.ok) {
-        console.error("Failed to add activity:", res.statusText);
-        return;
+        throw new Error(`Failed to add activity: ${res.statusText}`);
       }
 
       setNewActivity({ title: "", description: "" });
       fetchActivities(); // Refresh the list
     } catch (error) {
       console.error("Error adding activity:", error);
+      setErrorMessage(error.message);
     }
   };
 
@@ -118,13 +130,12 @@ export default function ActivitiesDashboard() {
       const res = await fetch("/api/activities", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, ...updatedData }), // Include ID and updated fields
+        body: JSON.stringify({ id, ...updatedData }),
         credentials: "include", // Ensure cookies are sent
       });
 
       if (!res.ok) {
-        console.error("Failed to update activity:", res.statusText);
-        return;
+        throw new Error(`Failed to update activity: ${res.statusText}`);
       }
 
       alert("Activity updated successfully!");
@@ -132,6 +143,7 @@ export default function ActivitiesDashboard() {
       fetchActivities(); // Refresh the activities list
     } catch (error) {
       console.error("Error updating activity:", error);
+      setErrorMessage(error.message);
     }
   };
 
@@ -146,14 +158,14 @@ export default function ActivitiesDashboard() {
       });
 
       if (!res.ok) {
-        console.error("Failed to delete activity:", res.statusText);
-        return;
+        throw new Error(`Failed to delete activity: ${res.statusText}`);
       }
 
       alert("Activity deleted successfully!");
       fetchActivities(); // Refresh the list of activities
     } catch (error) {
       console.error("Error deleting activity:", error);
+      setErrorMessage(error.message);
     }
   };
 
@@ -192,12 +204,20 @@ export default function ActivitiesDashboard() {
               </span>
             </p>
           </div>
+          <div className="flex gap-3">
+            <p className=" text-base text-gray-700">
+              {dateTime.toLocaleDateString()} {/* Format: e.g., 12/14/2024 */}
+            </p>
+            <p className=" text-base text-gray-700">
+              {dateTime.toLocaleTimeString()} {/* Format: e.g., 10:30:15 AM */}
+            </p>
+          </div>
 
           {/* Search Section */}
           <div className="mt-4">
             <input
               type="text"
-              placeholder="Search activities..."
+              placeholder="Search reminders..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="border p-2 w-full mb-4 break-words"
@@ -206,7 +226,7 @@ export default function ActivitiesDashboard() {
 
           {/* Add Action Form */}
           <div>
-            <h2 className="text-xl font-bold mb-2">Add action</h2>
+            <h2 className="text-xl font-bold mb-2">Add Reminder</h2>
             <input
               type="text"
               placeholder="Title"
@@ -246,6 +266,13 @@ export default function ActivitiesDashboard() {
               </button>
             </div>
           </div>
+
+          {/* Error Message Section */}
+          {errorMessage && (
+            <div className="bg-red-100 text-red-600 p-2 rounded mt-2">
+              <p>{errorMessage}</p>
+            </div>
+          )}
         </div>
 
         {/* Scrollable Activities Section */}
@@ -309,7 +336,10 @@ export default function ActivitiesDashboard() {
                     <h2 className="text-lg font-bold truncate">
                       {activity.title}
                     </h2>
-                    <p className="break-words">{activity.description}</p>
+                    {/* Updated description rendering */}
+                    <p className="whitespace-pre-wrap break-words">
+                      {activity.description}
+                    </p>
                     <p className="italic text-xs mt-4">
                       Created: {new Date(activity.createdAt).toLocaleString()}
                     </p>

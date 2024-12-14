@@ -14,7 +14,7 @@ const geistMono = localFont({
 });
 
 export const metadata = {
-  title: "Actions App",
+  title: "Reminder App",
   description: "Developed by LWJ",
   icons: {
     icon: "/icons/icon-512x512.png", // Favicon
