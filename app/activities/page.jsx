@@ -350,14 +350,16 @@ export default function ActivitiesDashboard() {
                       className="border p-2 w-full mb-2 break-words"
                       required
                     />
-                    <div className="flex items-center mt-1 mb-5">
+                    <div className="flex items-center justify-start mt-1 mb-5">
                       <input
                         name="completed"
                         type="checkbox"
                         defaultChecked={activity.completed}
                         className="w-4 h-4 mr-2"
                       />
-                      <label className="text-xs">Completed</label>
+                      <label className="text-xs ml-1 leading-none">
+                        Completed
+                      </label>
                     </div>
 
                     <div className="flex">

@@ -38,14 +38,14 @@ export default function LoginForm() {
         <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
-            className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-800"
             onChange={(e) => setEmail((e.target.value || "").toLowerCase())}
             type="email"
             placeholder="Email"
             required
           />
           <input
-            className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-800"
             onChange={(e) => setPassword(e.target.value)}
             type="password"
             placeholder="Password"
