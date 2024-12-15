@@ -11,6 +11,7 @@ const userActivitySchema = new Schema(
     title: { type: String, required: true },
     description: { type: String },
     date: { type: Date, default: Date.now },
+    completed: { type: Boolean, default: false }, // New field to track completion status
   },
   { timestamps: true }
 );

@@ -1,4 +1,4 @@
-//app/page.js
+//app/activities/page.jsx
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -12,6 +12,7 @@ export default function ActivitiesDashboard() {
   const [newActivity, setNewActivity] = useState({
     title: "",
     description: "",
+    completed: false, // New field for completion status
   });
   const [editActivity, setEditActivity] = useState(null);
   const [isExiting, setIsExiting] = useState(false);
@@ -21,16 +22,14 @@ export default function ActivitiesDashboard() {
   const [dateTime, setDateTime] = useState(new Date());
 
   useEffect(() => {
-    // Update the date and time every second
+    const now = new Date();
+    setDateTime(now); // Set initial consistent value
     const interval = setInterval(() => {
       setDateTime(new Date());
     }, 1000);
-
-    // Cleanup the interval on component unmount
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch activities with useCallback
   const fetchActivities = useCallback(async () => {
     if (status === "authenticated" && !isExiting) {
       try {
@@ -52,7 +51,6 @@ export default function ActivitiesDashboard() {
     }
   }, [status, isExiting]);
 
-  // Ensure session management and fetch activities
   useEffect(() => {
     if (status === "authenticated") {
       fetchActivities();
@@ -61,77 +59,69 @@ export default function ActivitiesDashboard() {
     }
   }, [status, fetchActivities, router]);
 
-  // Handle logout process
   const handleLogout = async () => {
     setIsExiting(true);
     await signOut({ redirect: false });
     router.push("/api/auth/signin");
   };
 
-  // Handle search functionality
   useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredActivities(activities);
-    } else {
-      setFilteredActivities(
-        activities.filter(
-          (activity) =>
-            activity.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            activity.description
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
-        )
-      );
-    }
+    const handler = setTimeout(() => {
+      if (searchQuery.trim() === "") {
+        setFilteredActivities(activities);
+      } else if (searchQuery.toLowerCase() === "#completed") {
+        setFilteredActivities(
+          activities.filter((activity) => activity.completed)
+        );
+      } else if (searchQuery.toLowerCase() === "#active") {
+        setFilteredActivities(
+          activities.filter((activity) => !activity.completed)
+        );
+      } else {
+        setFilteredActivities(
+          activities.filter(
+            (activity) =>
+              activity.title
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase()) ||
+              activity.description
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase())
+          )
+        );
+      }
+    }, 300); // 300ms debounce
+    return () => clearTimeout(handler);
   }, [searchQuery, activities]);
 
-  // Early returns after hooks have been initialized
-  if (isExiting) {
-    return (
-      <div className="container mx-auto flex justify-center bg-blue-200 items-center h-screen">
-        <h1 className="text-2xl font-bold">Signing Out...</h1>
-      </div>
-    );
-  }
-
-  if (status === "loading") {
-    return (
-      <div className="container mx-auto flex justify-center bg-blue-200 items-center h-screen">
-        <h1 className="text-2xl font-bold">Loading...</h1>
-      </div>
-    );
-  }
-
-  // Add activity
   const addActivity = async () => {
     try {
       const res = await fetch("/api/activities", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newActivity),
-        credentials: "include", // Ensure cookies are sent
+        credentials: "include",
       });
 
       if (!res.ok) {
         throw new Error(`Failed to add activity: ${res.statusText}`);
       }
 
-      setNewActivity({ title: "", description: "" });
-      fetchActivities(); // Refresh the list
+      setNewActivity({ title: "", description: "", completed: false });
+      fetchActivities();
     } catch (error) {
       console.error("Error adding activity:", error);
       setErrorMessage(error.message);
     }
   };
 
-  // Update activity
   const updateActivity = async (id, updatedData) => {
     try {
       const res = await fetch("/api/activities", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, ...updatedData }),
-        credentials: "include", // Ensure cookies are sent
+        credentials: "include",
       });
 
       if (!res.ok) {
@@ -139,22 +129,21 @@ export default function ActivitiesDashboard() {
       }
 
       alert("Activity updated successfully!");
-      setEditActivity(null); // Reset the edit state
-      fetchActivities(); // Refresh the activities list
+      setEditActivity(null);
+      fetchActivities();
     } catch (error) {
       console.error("Error updating activity:", error);
       setErrorMessage(error.message);
     }
   };
 
-  // Delete activity
   const deleteActivity = async (id) => {
     try {
       const res = await fetch("/api/activities", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }), // Send the ID of the activity to delete
-        credentials: "include", // Ensure cookies are sent
+        body: JSON.stringify({ id }),
+        credentials: "include",
       });
 
       if (!res.ok) {
@@ -162,71 +151,83 @@ export default function ActivitiesDashboard() {
       }
 
       alert("Activity deleted successfully!");
-      fetchActivities(); // Refresh the list of activities
+      fetchActivities();
     } catch (error) {
       console.error("Error deleting activity:", error);
       setErrorMessage(error.message);
     }
   };
 
-  // Clear form inputs
+  const toggleCompletion = async (id, currentStatus) => {
+    updateActivity(id, { completed: !currentStatus });
+  };
+
   const clearInputs = async () => {
     setSearchQuery("");
     setNewActivity({
       title: "",
       description: "",
+      completed: false,
     });
   };
 
   return (
-    <div className="bg-blue-200 h-screen">
+    <div className="bg-black h-screen">
       <div className="container mx-auto pt-0 p-4 max-w-screen-lg flex flex-col h-full">
-        {/* Fixed Form Section */}
         <div className="flex-shrink-0">
-          {/* Navigation Button */}
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-left mt-4 break-words">
-              Hello {session?.user?.name?.split(" ")[0] || "Guest"}!
+            <h1 className="text-2xl text-white font-bold text-left mt-4 break-words">
+              Hello {session ? session.user?.name?.split(" ")[0] : "Loading..."}
+              !
             </h1>
+            {errorMessage ? (
+              <div className="bg-red-100 text-red-600 p-2 rounded mt-2">
+                <p>{errorMessage}</p>
+              </div>
+            ) : null}
             <button
               onClick={handleLogout}
-              className="bg-slate-600 text-white text-base px-3 py-1 mt-3 ml-2 rounded hover:bg-slate-900"
+              className="bg-slate-100 text-black text-base px-3 py-1 mt-3 ml-2 rounded hover:bg-slate-300"
             >
-              Exit
+              Logout
             </button>
           </div>
 
-          <div className="text-left mb-4">
+          <div className="text-left text-white mb-1">
             <p>
               Email:{" "}
-              <span className="font-bold text-gray-700">
+              <span className="font-bold text-white">
                 {session?.user?.email}
               </span>
             </p>
           </div>
           <div className="flex gap-3">
-            <p className=" text-base text-gray-700">
-              {dateTime.toLocaleDateString()} {/* Format: e.g., 12/14/2024 */}
-            </p>
-            <p className=" text-base text-gray-700">
-              {dateTime.toLocaleTimeString()} {/* Format: e.g., 10:30:15 AM */}
-            </p>
+            {dateTime ? (
+              <>
+                <p className=" text-sm text-white">
+                  {dateTime.toLocaleDateString()}
+                </p>
+                <p className=" text-sm text-white">
+                  {dateTime.toLocaleTimeString()}
+                </p>
+              </>
+            ) : (
+              <p className="text-sm text-white">Loading time...</p>
+            )}
           </div>
 
-          {/* Search Section */}
           <div className="mt-4">
             <input
               type="text"
-              placeholder="Search reminders..."
+              placeholder="Search reminders... (e.g., #completed or #active)"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="border p-2 w-full mb-4 break-words"
             />
           </div>
 
-          {/* Add Action Form */}
           <div>
-            <h2 className="text-xl font-bold mb-2">Add Reminder</h2>
+            <h2 className="text-xl text-white font-bold mb-2">Add Reminder</h2>
             <input
               type="text"
               placeholder="Title"
@@ -244,30 +245,43 @@ export default function ActivitiesDashboard() {
               }
               className="border p-2 w-full mb-2 break-words"
             />
-            <div className="flex justify-between items-center">
+            <label className="flex items-center gap-1 text-xs mt-1 mb-5 text-white">
+              <input
+                type="checkbox"
+                checked={newActivity.completed}
+                onChange={(e) =>
+                  setNewActivity({
+                    ...newActivity,
+                    completed: e.target.checked,
+                  })
+                }
+                className="w-4 h-4"
+              />
+              <span>Completed</span>
+            </label>
+            <div className="flex justify-between items-center mt-2">
               <button
                 onClick={addActivity}
                 disabled={
                   !newActivity.title.trim() || !newActivity.description.trim()
                 }
-                className={`px-3 py-1 text-base rounded-md ${
+                className={`px-3 py-1 text-base text-black rounded-md ${
                   !newActivity.title.trim() || !newActivity.description.trim()
-                    ? "bg-gray-300 cursor-not-allowed text-gray-500"
-                    : "bg-green-500 text-white hover:bg-green-600"
+                    ? "bg-gray-100 cursor-not-allowed text-gray-400"
+                    : "bg-green-500 text-black hover:bg-green-600"
                 }`}
               >
-                Add action
+                Add reminder
               </button>
               <button
                 onClick={clearInputs}
-                className="bg-slate-600 text-white w-fit px-3 py-1 rounded-md ml-3 text-base hover:bg-slate-900"
+                className="bg-slate-100 text-black w-fit px-3 py-1 rounded-md ml-3 text-base hover:bg-slate-300"
               >
                 Refresh
               </button>
             </div>
           </div>
 
-          {/* Error Message Section */}
           {errorMessage && (
             <div className="bg-red-100 text-red-600 p-2 rounded mt-2">
               <p>{errorMessage}</p>
@@ -275,7 +289,6 @@ export default function ActivitiesDashboard() {
           )}
         </div>
 
-        {/* Scrollable Activities Section */}
         <div className="flex-grow overflow-y-auto mt-4">
           <div className="grid grid-cols-1 gap-4">
             {filteredActivities.map((activity) => (
@@ -290,7 +303,7 @@ export default function ActivitiesDashboard() {
                       const updatedData = {
                         title: e.target.title.value,
                         description: e.target.description.value,
-                        date: e.target.date.value,
+                        completed: e.target.completed.checked,
                       };
                       updateActivity(activity._id, updatedData);
                     }}
@@ -309,12 +322,15 @@ export default function ActivitiesDashboard() {
                       className="border p-2 w-full mb-2 break-words"
                       required
                     />
-                    <input
-                      name="date"
-                      type="date"
-                      defaultValue={activity.date?.slice(0, 10)}
-                      className="border p-2 w-full mb-2 break-words"
-                    />
+                    <label className="flex items-center gap-1 text-xs mt-1 mb-5">
+                      <input
+                        name="completed"
+                        type="checkbox"
+                        defaultChecked={activity.completed}
+                        className="w-4 h-4"
+                      />
+                      <span>Completed</span>
+                    </label>
                     <div className="flex">
                       <button
                         type="submit"
@@ -336,9 +352,21 @@ export default function ActivitiesDashboard() {
                     <h2 className="text-lg font-bold truncate">
                       {activity.title}
                     </h2>
-                    {/* Updated description rendering */}
                     <p className="whitespace-pre-wrap break-words">
                       {activity.description}
+                    </p>
+                    <p>
+                      <label className="flex items-center gap-1 text-xs mt-6">
+                        <input
+                          type="checkbox"
+                          checked={activity.completed}
+                          onChange={() =>
+                            toggleCompletion(activity._id, activity.completed)
+                          }
+                          className="w-4 h-4"
+                        />
+                        <span>Completed</span>
+                      </label>
                     </p>
                     <p className="italic text-xs mt-4">
                       Created: {new Date(activity.createdAt).toLocaleString()}

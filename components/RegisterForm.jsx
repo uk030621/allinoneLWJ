@@ -59,8 +59,8 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="grid place-items-start min-h-screen bg-blue-200 px-4 py-8">
-      <div className="shadow-lg p-6 rounded-lg border-t-4 border-blue-400 bg-slate-400 max-w-md w-full">
+    <div className="grid place-items-start justify-items-center min-h-screen bg-black px-4 py-8">
+      <div className="shadow-lg p-6 rounded-lg  bg-slate-400 max-w-md w-full">
         <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
