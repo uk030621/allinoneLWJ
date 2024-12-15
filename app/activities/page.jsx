@@ -355,9 +355,13 @@ export default function ActivitiesDashboard() {
                         name="completed"
                         type="checkbox"
                         defaultChecked={activity.completed}
-                        className="w-4 h-4 mr-2"
+                        className="w-4 h-4 m-0 p-0"
                       />
-                      <label className="text-xs ml-1 leading-none">
+                      <label
+                        htmlFor="completed"
+                        className="text-xs ml-1 leading-none"
+                        style={{ marginLeft: "4px", lineHeight: "1rem" }}
+                      >
                         Completed
                       </label>
                     </div>
