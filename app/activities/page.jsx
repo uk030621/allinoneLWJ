@@ -226,9 +226,9 @@ export default function ActivitiesDashboard() {
             />
           </div>
 
-          <div className="flex items-center justify-start gap-4 text-xs mt-1 mb-5 text-white">
+          <div className="flex items-center justify-start gap-3 text-xs mt-1 mb-5 text-white">
             {/* Active Checkbox */}
-            <label className="flex items-center gap-1">
+            <label className="flex items-center gap-[0.25rem]">
               <input
                 type="checkbox"
                 checked={searchQuery === "#active"}
@@ -241,7 +241,7 @@ export default function ActivitiesDashboard() {
             </label>
 
             {/* Done Checkbox */}
-            <label className="flex items-center gap-1">
+            <label className="flex items-center gap-[0.25rem]">
               <input
                 type="checkbox"
                 checked={searchQuery === "#completed"}
