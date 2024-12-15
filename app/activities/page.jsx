@@ -177,7 +177,7 @@ export default function ActivitiesDashboard() {
         <div className="flex-shrink-0">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl text-white font-bold text-left mt-4 break-words">
-              Hello {session ? session.user?.name?.split(" ")[0] : "Loading..."}
+              Hello {session ? session.user?.name?.split(" ")[0] : "Exiting..."}
               !
             </h1>
             {errorMessage ? (
@@ -219,11 +219,41 @@ export default function ActivitiesDashboard() {
           <div className="mt-4">
             <input
               type="text"
-              placeholder="Search reminders... (e.g., #completed or #active)"
+              placeholder="Search reminders... " //(e.g., #completed or #active)
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="border p-2 w-full mb-4 break-words"
             />
+          </div>
+
+          <div className="flex items-center gap-4 text-xs mt-1 mb-5 text-white">
+            {/* Active Checkbox */}
+            <label className="flex items-center gap-1">
+              <input
+                type="checkbox"
+                checked={searchQuery === "#active"}
+                onChange={() =>
+                  setSearchQuery(searchQuery === "#active" ? "" : "#active")
+                }
+                className="w-4 h-4"
+              />
+              <span>Active</span>
+            </label>
+
+            {/* Done Checkbox */}
+            <label className="flex items-center gap-1">
+              <input
+                type="checkbox"
+                checked={searchQuery === "#completed"}
+                onChange={() =>
+                  setSearchQuery(
+                    searchQuery === "#completed" ? "" : "#completed"
+                  )
+                }
+                className="w-4 h-4"
+              />
+              <span>Done</span>
+            </label>
           </div>
 
           <div>
@@ -245,20 +275,6 @@ export default function ActivitiesDashboard() {
               }
               className="border p-2 w-full mb-2 break-words"
             />
-            <label className="flex items-center gap-1 text-xs mt-1 mb-5 text-white">
-              <input
-                type="checkbox"
-                checked={newActivity.completed}
-                onChange={(e) =>
-                  setNewActivity({
-                    ...newActivity,
-                    completed: e.target.checked,
-                  })
-                }
-                className="w-4 h-4"
-              />
-              <span>Completed</span>
-            </label>
             <div className="flex justify-between items-center mt-2">
               <button
                 onClick={addActivity}
