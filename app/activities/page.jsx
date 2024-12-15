@@ -226,34 +226,46 @@ export default function ActivitiesDashboard() {
             />
           </div>
 
-          <div className="flex items-center justify-start gap-3 text-xs mt-1 mb-5 text-white">
+          <div className="flex items-center justify-start gap-4 text-xs mt-1 mb-5 text-white">
             {/* Active Checkbox */}
-            <label className="flex items-center gap-[0.25rem]">
+            <div className="flex items-center">
               <input
                 type="checkbox"
+                id="active-checkbox"
                 checked={searchQuery === "#active"}
                 onChange={() =>
                   setSearchQuery(searchQuery === "#active" ? "" : "#active")
                 }
-                className="w-4 h-4"
+                className="w-4 h-4 m-0 p-0"
               />
-              <span>Active</span>
-            </label>
+              <label
+                htmlFor="active-checkbox"
+                className="ml-1 leading-none text-white"
+              >
+                Active
+              </label>
+            </div>
 
             {/* Done Checkbox */}
-            <label className="flex items-center gap-[0.25rem]">
+            <div className="flex items-center">
               <input
                 type="checkbox"
+                id="done-checkbox"
                 checked={searchQuery === "#completed"}
                 onChange={() =>
                   setSearchQuery(
                     searchQuery === "#completed" ? "" : "#completed"
                   )
                 }
-                className="w-4 h-4"
+                className="w-4 h-4 m-0 p-0"
               />
-              <span>Done</span>
-            </label>
+              <label
+                htmlFor="done-checkbox"
+                className="ml-1 leading-none text-white"
+              >
+                Done
+              </label>
+            </div>
           </div>
 
           <div>
