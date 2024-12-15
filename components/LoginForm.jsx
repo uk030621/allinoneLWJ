@@ -51,7 +51,7 @@ export default function LoginForm() {
             placeholder="Password"
             required
           />
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 font-bold rounded-md cursor-pointer transition-all duration-200">
+          <button className="bg-black hover:bg-gray-800 text-white px-6 py-2 font-bold rounded-md cursor-pointer transition-all duration-200">
             Login
           </button>
 
