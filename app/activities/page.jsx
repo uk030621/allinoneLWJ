@@ -263,7 +263,7 @@ export default function ActivitiesDashboard() {
                 htmlFor="done-checkbox"
                 className="ml-1 leading-none text-white"
               >
-                Done
+                Completed
               </label>
             </div>
           </div>
