@@ -16,7 +16,7 @@ export default function ActivitiesDashboard() {
   });
   const [editActivity, setEditActivity] = useState(null);
   const [isExiting, setIsExiting] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("#active");
   const [errorMessage, setErrorMessage] = useState(null);
   const router = useRouter();
   const [dateTime, setDateTime] = useState(new Date());
@@ -390,26 +390,25 @@ export default function ActivitiesDashboard() {
                     <p className="whitespace-pre-wrap break-words">
                       {activity.description}
                     </p>
-                    <p>
-                      <div className="flex items-center justify-start text-xs mt-6">
-                        <input
-                          name="completed"
-                          type="checkbox"
-                          checked={activity.completed}
-                          onChange={() =>
-                            toggleCompletion(activity._id, activity.completed)
-                          }
-                          className="w-4 h-4 m-0 p-0"
-                        />
-                        <label
-                          htmlFor="completed"
-                          className="text-xs ml-1 leading-none"
-                          style={{ marginLeft: "4px", lineHeight: "1rem" }}
-                        >
-                          <span>Completed</span>
-                        </label>
-                      </div>
-                    </p>
+                    <div className="flex items-center justify-start text-xs mt-6">
+                      <input
+                        name="completed"
+                        type="checkbox"
+                        checked={activity.completed}
+                        onChange={() =>
+                          toggleCompletion(activity._id, activity.completed)
+                        }
+                        className="w-4 h-4 m-0 p-0"
+                      />
+                      <label
+                        htmlFor="completed"
+                        className="text-xs ml-1 leading-none"
+                        style={{ marginLeft: "4px", lineHeight: "1rem" }}
+                      >
+                        <span>Completed</span>
+                      </label>
+                    </div>
+
                     <p className="italic text-xs mt-4">
                       Created: {new Date(activity.createdAt).toLocaleString()}
                     </p>
